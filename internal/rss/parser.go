@@ -20,6 +20,7 @@ type Item struct {
 	Title       string `xml:"title"`
 	Link        string `xml:"link"`
 	Description string `xml:"description"`
+	GUID        string `xml:"guid"`
 	PubDate     string `xml:"pubDate"`
 }
 
