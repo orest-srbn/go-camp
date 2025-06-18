@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+type Date time.Time
+
 type Feed struct {
 	XMLName     xml.Name `xml:"rss"`
 	Title       string   `xml:"channel>title"`
@@ -21,7 +23,7 @@ type Item struct {
 	Link        string `xml:"link"`
 	Description string `xml:"description"`
 	GUID        string `xml:"guid"`
-	PubDate     string `xml:"pubDate"`
+	PubDate     Date   `xml:"pubDate"`
 }
 
 // ParseFeed downloads and parses an RSS feed from the given URL
@@ -55,4 +57,21 @@ func ParseFeed(url string) (*Feed, error) {
 	}
 
 	return &feed, nil
+}
+
+func (d Date) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(time.Time(d).Format(time.RFC1123Z), start)
+}
+
+func (d *Date) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error {
+	var v string
+	if err := dec.DecodeElement(&v, &start); err != nil {
+		return err
+	}
+	t, err := time.Parse(time.RFC1123Z, v)
+	if err != nil {
+		return err
+	}
+	*d = Date(t)
+	return nil
 }

@@ -46,18 +46,12 @@ func main() {
 
 	// Process each item
 	for _, item := range feed.Items {
-		pubDate, err := time.Parse(time.RFC1123Z, item.PubDate)
-		if err != nil {
-			log.Printf("Error parsing date for item %s: %v", item.Title, err)
-			continue
-		}
-
 		article := &db.Article{
 			GUID:        item.GUID,
 			Title:       item.Title,
 			Link:        item.Link,
 			Description: item.Description,
-			PubDate:     pubDate,
+			PubDate:     time.Time(item.PubDate),
 		}
 
 		if err := article.Save(ctx); err != nil {

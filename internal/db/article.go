@@ -48,13 +48,13 @@ func (a *Article) Exists(ctx context.Context) (bool, error) {
 	return exists, err
 }
 
-func GetArticleByGUID(ctx context.Context, guid string) (*Article, error) {
+func GetArticleByGUID(ctx context.Context, guid string) (Article, error) {
 	query := `
 		SELECT id, guid, title, link, description, pub_date, created_at, updated_at
 		FROM articles
 		WHERE guid = $1`
 
-	article := &Article{}
+	article := Article{}
 	err := DB.QueryRow(ctx, query, guid).Scan(
 		&article.ID,
 		&article.GUID,
@@ -66,7 +66,7 @@ func GetArticleByGUID(ctx context.Context, guid string) (*Article, error) {
 		&article.UpdatedAt,
 	)
 	if err != nil {
-		return nil, err
+		return Article{}, err
 	}
 	return article, nil
 }
